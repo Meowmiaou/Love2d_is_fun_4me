@@ -15,8 +15,9 @@ function love.load()
 	char.y = world.floor -char.height				-- char gets spawned on floor
 	char.speed = 0
 	char.charge = 0
-	buffer = true
+	buffer = 0
 	buffermore = true
+	player = love.graphics.newImage("goop.png")
 	random_pillar()
 end
 
@@ -26,7 +27,9 @@ function love.update(dt)
 	player_movement()
 	gravity()
 	check_pillar_offscreen()
+	collision_hori()
 	love.draw()
+	buffer = (buffer + 1) % 2
 end
 
 function random_pillar(arg)   -- arg is the position in objects the random pillar is going to get
@@ -35,12 +38,14 @@ end
 
 function check_pillar_offscreen( ... )
 	for  h = 0 , object_count - 1, 1 do 
-		if objects[h].posx + objects[h].width + 50 < 0 then
+		if objects[h].posx + objects[h].width + 250 < 0 then
 			world.score = world.score + 1
-			if buffer then
-				objects.speed = objects.speed - 1
-				buffer = false
-			else buffer = true
+			if objects.speed > -11 then
+				if buffermore then
+					objects.speed = objects.speed - 1
+					buffermore = false
+				else buffermore = true
+				end 
 			end
 			random_pillar(h)
 		end
@@ -55,20 +60,47 @@ function gravity ()
 	end
 end
 
+function reset()
+	char = {}
+	objects = {}
+	object_count = 0
+	objects.speed = -4
+	world.score = 0
+	char.width = 30
+	char.height = 30
+	char.x =  100
+	char.y = world.floor -char.height	
+	char.speed = 0
+	char.charge = 0
+	buffer = 0
+	buffermore = true
+	random_pillar()
+end
+
+function collision_hori( ... )
+	for  p = 0 , object_count - 1, 1 do
+		if char.x < objects[p].posx and objects[p].posx < char.x + char.width then
+			if char.y + char.height > world.floor - objects[p].height then
+				reset()
+			end
+		end
+	end
+end
+
 function chargin()
 	if love.keyboard.isDown(" ")  then
-		if buffer == true then
-			if char.charge < 21 then
-				char.charge = char.charge + 1
+		if char.y >= world.floor - char.height then	
+			if buffer == 1 then
+				if char.charge < 21 then
+					char.charge = char.charge + 1
+				end
 			end
-			buffer = false
-		else buffer = true
 		end
 	end
 end
 
 function love.keyreleased(key)
-	if  key == " " then
+	if  key == " " and char.charge > 0 then
 		char.speed = - char.charge
 		char.charge = 0
 	end
@@ -124,9 +156,22 @@ function draw_floor()
 	love.graphics.rectangle("fill",0, world.floor, width, height - world.floor)
 end
 
+function draw_sprite()
+	love.graphics.setColor(255,255,255)
+	love.graphics.draw(player, char.x, char.y)
+end
+
+function draw_chargebar()
+	love.graphics.setColor(0,0,0)
+	love.graphics.rectangle("fill",40,height-30, char.charge*10, 10)
+end
+
 function love.draw ()
 	draw_floor()
 	draw_objects()
-	draw_char()
+	--draw_char()
+	draw_sprite()
 	love.graphics.setColor(0,0,0)
+	love.graphics.print("Score: "..world.score, width-100,30)
+	draw_chargebar()
 end
