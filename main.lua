@@ -19,7 +19,7 @@ function love.load()
 	buffer = 0
 	buffermore = true
 	long = 0
-	player = love.graphics.newImage("goop.png")
+	player = love.graphics.newImage("Creatureofthenight.png")
 	objects.lastpillarsize = 100
 end
 
