@@ -19,7 +19,9 @@ function love.load()
 	buffer = 0
 	buffermore = true
 	long = 0
+	crouching = false
 	player = love.graphics.newImage("Creatureofthenight.png")
+	croucher = love.graphics.newImage("Rawr2.png")
 	objects.lastpillarsize = 100
 end
 
@@ -35,6 +37,16 @@ function love.update(dt)
 	love.draw()
 	buffer = (buffer + 1) % 2
 	long = (long + 1)
+end
+
+function crouchinger( ... )
+	if crouching == true then
+		love.graphics.setColor(255,255,255)
+		love.graphics.draw(croucher, char.x, char.y)
+	else
+		love.graphics.setColor(255,255,255)
+		love.graphics.draw(player, char.x, char.y)
+	end
 end
 
 function random_pillar()   -- arg is the position in objects the random pillar is going to get
@@ -123,6 +135,7 @@ function chargin()
 		if char.y >= world.floor - char.height then	
 			if buffer == 1 then
 				if char.charge < 21 then
+					crouching = true
 					char.charge = char.charge + 1
 				end
 			end
@@ -134,6 +147,7 @@ function love.keyreleased(key)
 	if  key == " " and char.charge > 0 then
 		char.speed = - char.charge
 		char.charge = 0
+		crouching = false
 	end
 end
 
@@ -192,8 +206,9 @@ end
 function love.draw ()
 	draw_floor()
 	draw_objects()
+	crouchinger()
 	--draw_char()
-	draw_sprite()
+	--draw_sprite()
 	love.graphics.setColor(0,0,0)
 	love.graphics.print("Score: "..world.score, width-100,30)
 	draw_chargebar()
