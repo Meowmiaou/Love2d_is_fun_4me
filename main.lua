@@ -23,6 +23,8 @@ function love.load()
 	crouching = false
 	player = love.graphics.newImage("Creatureofthenight.png")
 	croucher = love.graphics.newImage("Rawr2.png")
+	vine = love.graphics.newImage("vine.png")
+	upsidevine = love.graphics.newImage("upsidevine.png")
 	objects.lastpillarsize = 80
 	objects.nextpillarsize = love.math.random(40,4*(height/6))
 end
@@ -193,14 +195,19 @@ function spawn_pillar(h , where, supper)
 end
 
 function draw_objects()
-	love.graphics.setColor(110,50,0)
+	love.graphics.setColor(255,255,255)
 	for  i = 0 , object_count - 1, 1 do
-		love.graphics.rectangle("fill", objects[i].posx, objects[i].posy, objects[i].width, objects[i].height)
+		if objects[i].upper then
+			love.graphics.draw(upsidevine, objects[i].posx ,objects[i].posy - 500 + objects[i].height)
+		else
+		--love.graphics.rectangle("fill", objects[i].posx, objects[i].posy, objects[i].width, objects[i].height)
+			love.graphics.draw(vine, objects[i].posx, objects[i].posy)
+		end
 	end
 end
 
 function draw_floor()
-	love.graphics.setColor(0,100,0)
+	love.graphics.setColor(128,90,0)
 	love.graphics.rectangle("fill",0, world.floor, width, height - world.floor)
 end
 
@@ -211,8 +218,8 @@ function draw_chargebar()
 end
 
 function love.draw ()
-	draw_floor()
 	draw_objects()
+	draw_floor()
 	crouchinger()
 	love.graphics.setColor(0,0,0)
 	love.graphics.print("Score: "..world.score, width-100,30)
