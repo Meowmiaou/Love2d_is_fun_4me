@@ -11,6 +11,7 @@ function love.load()
 	world.floor = height - height/6 					--floor is @ 1/6 of the window height
 	world.score = 0
 	world.highscore = 0
+	world.lastscore = 0
 	char.width = 30
 	char.height = 30
 	char.x =  100
@@ -87,6 +88,7 @@ function reset()
 	objects = {}
 	object_count = 0
 	objects.speed = -7
+	world.lastscore = world.score
 	world.score = 0
 	char.width = 30
 	char.height = 30
@@ -218,11 +220,12 @@ function draw_chargebar()
 end
 
 function love.draw ()
+	love.graphics.print("Last Score: "..world.lastscore, width-100,50)
+ 	love.graphics.print("Highscore: "..world.highscore, width-100,70)
 	draw_objects()
 	draw_floor()
 	crouchinger()
 	love.graphics.setColor(0,0,0)
 	love.graphics.print("Score: "..world.score, width-100,30)
-	love.graphics.print("Highscore: "..world.highscore, width-100,50)
 	draw_chargebar()
 end
