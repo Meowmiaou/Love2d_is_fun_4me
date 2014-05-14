@@ -2,6 +2,7 @@ function love.load()
 	char = {}
 	objects = {}
 	world = {}
+	back = {}
 	object_count = 0
 	objects.speed = -7
 	love.window.setMode(1500,600,{})
@@ -9,7 +10,7 @@ function love.load()
 	height = love.graphics: getHeight()
 	love.graphics.setBackgroundColor(255,255,255)
 	world.floor = height - height/6 					--floor is @ 1/6 of the window height
-	world.score = 0
+	world.score = 10
 	world.highscore = 0
 	world.lastscore = 0
 	char.width = 30
@@ -26,6 +27,15 @@ function love.load()
 	croucher = love.graphics.newImage("Rawr2.png")
 	vine = love.graphics.newImage("vine.png")
 	upsidevine = love.graphics.newImage("upsidevine.png")
+	background = love.graphics.newImage("back.png")
+	n1 = {}
+	n2 = {}
+	n1.x = 0
+	n1.y = 0
+	n2.x = width
+	n2.y = 0
+	back[0] = n1
+	back[1] = n2
 	objects.lastpillarsize = 80
 	objects.nextpillarsize = love.math.random(40,4*(height/6))
 end
@@ -34,7 +44,8 @@ function love.update(dt)
 	chargin()
 	object_movement()
 	player_movement()
-	gravity()	
+	gravity()
+	backgroundmovement()	
 	--check_pillar_offscreen()
 	collision_hori()
 	collision_verti()
@@ -42,6 +53,19 @@ function love.update(dt)
 	love.draw()
 	buffer = (buffer + 1) % 2
 	long = (long + 1)
+end
+
+function drawbackground(backs)
+	if backs.x < -width then
+		backs.x = width
+	end
+	love.graphics.setColor(255,255,255)
+	love.graphics.draw(background, backs.x, backs.y)
+end
+
+function backgroundmovement( ... )
+	back[1].x = back[1].x -1
+	back[0].x = back[0].x -1 
 end
 
 function crouchinger( ... )
@@ -197,7 +221,7 @@ function spawn_pillar(h , where, supper)
 end
 
 function draw_objects()
-	love.graphics.setColor(255,255,255)
+	love.graphics.setColor(128,128,128)
 	for  i = 0 , object_count - 1, 1 do
 		if objects[i].upper then
 			love.graphics.draw(upsidevine, objects[i].posx ,objects[i].posy - 500 + objects[i].height)
@@ -209,23 +233,25 @@ function draw_objects()
 end
 
 function draw_floor()
-	love.graphics.setColor(128,90,0)
+	love.graphics.setColor(50,30,30)
 	love.graphics.rectangle("fill",0, world.floor, width, height - world.floor)
 end
 
 
 function draw_chargebar()
-	love.graphics.setColor(0,0,0)
+	love.graphics.setColor(char.charge * 10,0,0)
 	love.graphics.rectangle("fill",40,height-30, char.charge*10, 10)
 end
 
 function love.draw ()
+	drawbackground(back[0])
+	drawbackground(back[1])
 	love.graphics.print("Last Score: "..world.lastscore, width-100,50)
  	love.graphics.print("Highscore: "..world.highscore, width-100,70)
 	draw_objects()
 	draw_floor()
 	crouchinger()
-	love.graphics.setColor(0,0,0)
+	love.graphics.setColor(255,255,255)
 	love.graphics.print("Score: "..world.score, width-100,30)
 	draw_chargebar()
 end
