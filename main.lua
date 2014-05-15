@@ -28,6 +28,7 @@ function love.load()
 	vine = love.graphics.newImage("vine.png")
 	upsidevine = love.graphics.newImage("upsidevine.png")
 	background = love.graphics.newImage("back.png")
+	ground = love.graphics.newImage("floor.png")
 	n1 = {}
 	n2 = {}
 	n1.x = 0
@@ -36,6 +37,14 @@ function love.load()
 	n2.y = 0
 	back[0] = n1
 	back[1] = n2
+	m1 = {}
+	m2 = {}
+	m1.x = 0
+	m1.y = world.floor
+	m2.x = width
+	m2.y = world.floor
+	back[2] = m1
+	back[3] = m2
 	objects.lastpillarsize = 80
 	objects.nextpillarsize = love.math.random(40,4*(height/6))
 end
@@ -45,7 +54,8 @@ function love.update(dt)
 	object_movement()
 	player_movement()
 	gravity()
-	backgroundmovement()	
+	backgroundmovement()
+	groundmovement()	
 	--check_pillar_offscreen()
 	collision_hori()
 	collision_verti()
@@ -243,13 +253,28 @@ function draw_chargebar()
 	love.graphics.rectangle("fill",40,height-30, char.charge*10, 10)
 end
 
+function drawground(backs)
+	if backs.x < -width then
+		backs.x = width
+	end
+	love.graphics.setColor(255,255,255)
+	love.graphics.draw(ground, backs.x, backs.y)
+end
+
+function groundmovement( ... )
+	back[2].x = back[2].x -7
+	back[3].x = back[3].x -7 
+end
+
 function love.draw ()
 	drawbackground(back[0])
 	drawbackground(back[1])
 	love.graphics.print("Last Score: "..world.lastscore, width-100,50)
  	love.graphics.print("Highscore: "..world.highscore, width-100,70)
 	draw_objects()
-	draw_floor()
+	drawground(back[2])
+	drawground(back[3])
+	--draw_floor()
 	crouchinger()
 	love.graphics.setColor(255,255,255)
 	love.graphics.print("Score: "..world.score, width-100,30)
